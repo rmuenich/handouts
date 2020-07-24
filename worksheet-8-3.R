@@ -1,9 +1,9 @@
 # Packages
-library(...)
-library(...)
+library(ggplot2)
+library(dplyr)
 
 # Data
-popdata <- read.csv('data/citypopdata.csv')
+popdata <- read.csv('/home/becca/data/citypopdata.csv')
 
 # User Interface
 in1 <- selectInput(
@@ -13,10 +13,12 @@ in1 <- selectInput(
 )
 
 out1 <- textOutput('city_label')
-...
+out2 <- plotOutput('city_plot')
+side <- sidebarPanel('Options', in1)
+main <- mainPanel(out1, out2)
 tab1 <- tabPanel(
   title = 'City Population',
-  in1, out1, ...)
+  sidebarLayout(side,main))
 ui <- navbarPage(
   title = 'Census Population Explorer',
   tab1)
@@ -26,11 +28,11 @@ server <- function(input, output) {
   output[['city_label']] <- renderText({
     input[['selected_city']]
   })
-  output[['city_plot']] <- ...({
+  output[['city_plot']] <- renderPlot({
     df <- popdata %>%
-      ...(NAME == ...)
-    ...(..., aes(x = year, y = population)) +
-      ...()
+      filter(NAME == input[['selected_city']])
+    ggplot(df, aes(x = year, y = population)) +
+      geom_line()
   })
 }
 

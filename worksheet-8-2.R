@@ -1,23 +1,23 @@
-# Data
-popdata <- ...('data/citypopdata.csv')
+# Data (video 2)
+popdata <- read.csv('/home/becca/data/citypopdata.csv')
 
 # User Interface
 in1 <- selectInput(
-  ...,
+  inputId = 'selected_city',
   label = 'Select a city',
-  choices = ...)
-...
-tab1 <- ...(
-  ...
-  ...)
+  choices = unique(popdata[['NAME']]))
+out1 <-textOutput('city_label')
+tab1 <- tabPanel(
+  title = "City Population",
+  in1, out1)
 ui <- navbarPage(
   title = 'Census Population Explorer',
-  ...)
+  tab1)
 
 # Server
-server <- function(...) {
-  ... <- ...({
-    input[[...]]
+server <- function(input, output) {
+  output[['city_label']] <- renderText({
+    input[['selected_city']]
   })
 }
 

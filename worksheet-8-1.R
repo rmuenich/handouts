@@ -1,8 +1,9 @@
+#make sure you load library(shiny)
 # User Interface
-... <- ...(title = 'Hello, Shiny World!')
+ui <- navbarPage(title = 'Hello, Shiny World!')
 
 # Server
-... <- function(...) {}
+server <- function(input,output) {}
 
 # Create the Shiny App
-shinyApp(...)
+shinyApp(ui, server) #creates the run app function

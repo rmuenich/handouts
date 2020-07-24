@@ -1,54 +1,59 @@
 # Documenting and Publishing your Data Worksheet
 
 # Preparing Data for Publication
-library(...)
+library(tidyverse)
 
-stm_dat <- ...("data/StormEvents.csv")
+stm_dat <- read_csv("data/StormEvents.csv")
 
-...(stm_dat)
-...(stm_dat)
+head(stm_dat)
+tail(stm_dat)
+str(stm_dat)
 
-...(stm_dat$EVENT_NARRATIVE) 
+unique(stm_dat$EVENT_NARRATIVE) 
 
-...('storm_project', showWarnings = FALSE)
-...(stm_dat, "storm_project/StormEvents_d2006.csv")
+dir.create('storm_project', showWarnings = FALSE)
+write_csv(stm_dat, "storm_project/StormEvents_d2006.csv")
 
 # Creating metadata
-library(...) ; library(...)
+library(dataspice) ; library(EML)
 
-...(dir = "storm_project")
+#install.packages("devtools"); devtools::install_github("ropenscilabs/dataspice") # had to do this bc wouldn't let me install 
 
-...(stm_dat$YEAR)
-...(stm_dat$BEGIN_LAT, na.rm=TRUE)
-...(stm_dat$BEGIN_LON, na.rm=TRUE)
+create_spice(dir = "storm_project")
 
-...(metadata_dir = here("storm_project", "metadata"))
+range(stm_dat$YEAR) #date range
+range(stm_dat$BEGIN_LAT, na.rm=TRUE) #geographic range
+range(stm_dat$BEGIN_LON, na.rm=TRUE)
 
-...(metadata_dir = here("storm_project", "metadata"))
+edit_biblio(metadata_dir = "storm_project/metadata")
 
-...(data_path = here("storm_project"),
-            access_path = here("storm_project", "metadata", "..."))
-...(metadata_dir = here("storm_project", "metadata"))
+edit_creators(metadata_dir = "storm_project/metadata")
 
-...(data_path = here("storm_project"),
-                attributes_path = here("storm_project", "metadata", "..."))
-...(metadata_dir = here("storm_project", "metadata"))
+prep_access(data_path = "storm_project",
+            access_path = "storm_project/metadata/access.csv")
+edit_access(metadata_dir = "storm_project/metadata")
 
-...(path = here("storm_project", "metadata"))
+prep_attributes(data_path = "storm_project",
+                attributes_path = "storm_project/metadata/attributes.csv")
+edit_attributes(metadata_dir = "storm_project/metadata")
 
-library(...) ; library(...) ; library(...)
+write_spice(path ='storm_project/metadata')
+build_site(path = "storm_project/metadata/dataspice.json")
 
-json <- ...("storm_project/metadata/dataspice.json")
-eml <- ...(json)
-...(eml, "storm_project/metadata/dataspice.xml")
 
-# Creating a data package
-library(...) ; library(...)
+library(emld) ; library(EML) ; library(jsonlite)
 
-dp <- ...("DataPackage") # create empty data package
+json <- read_json("storm_project/metadata/dataspice.json")
+eml <- as_emld(json)
+write_eml(eml, "storm_project/metadata/dataspice.xml")
 
-... <- "storm_project/metadata/dataspice.xml"
-... <- paste("urn:uuid:", UUIDgenerate(), sep = "")
+# Creating a data package (Video 3)
+library(datapack) ; library(dataone)
+
+dp <- new("DataPackage") # create empty data package
+
+emlFile <- "storm_project/metadata/dataspice.xml"
+emlId <- paste("urn:uuid:", UUIDgenerate(), sep = "")
 
 ... <- new("DataObject", id = ..., format = "eml://ecoinformatics.org/eml-2.1.1", file = ...)
 
